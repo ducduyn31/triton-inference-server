@@ -1,0 +1,28 @@
+name: "retina_preprocess"
+backend: "dali"
+max_batch_size: 50
+input [
+{
+        name: "DALI_IMAGE_INPUT"
+        data_type: TYPE_UINT8 
+        dims: [ -1 ]
+},
+{
+	name: "DALI_ROI_START_INPUT"
+	data_type: TYPE_FP32
+	dims: [ 2 ]
+},
+{
+	name: "DALI_ROI_END_INPUT"
+	data_type: TYPE_FP32
+	dims: [ 2 ]
+}
+]
+
+output [
+{
+        name: "DALI_OUTPUT"
+        data_type: TYPE_FP32
+        dims: [ 3, 480, 640 ]
+}
+]

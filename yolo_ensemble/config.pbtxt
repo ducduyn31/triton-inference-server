@@ -1,0 +1,45 @@
+name: "yolo_ensemble"
+platform: "ensemble"
+max_batch_size: 50
+input [
+        {
+                name: "IMAGE"
+                data_type: TYPE_UINT8 
+                dims: [ -1 ]
+        }
+]
+output [
+        {
+                name: "RESULT"
+                data_type: TYPE_FP32
+                dims: [ 6001, 1, 1 ]
+        }
+]
+ensemble_scheduling {
+        step [
+                {
+                        model_name: "yolo_preprocess"
+                        model_version: 1
+                        input_map {
+                                key: "DALI_INPUT"
+                                value: "IMAGE"
+                        }
+                        output_map {
+                                key: "DALI_OUTPUT"
+                                value: "preprocessed_image"
+                        }
+                },
+                {
+                        model_name: "yolov5"
+                        model_version: 1
+                        input_map {
+                                key: "data"
+                                value: "preprocessed_image"
+                        }
+                        output_map {
+                                key: "prob"
+                                value: "RESULT"
+                        }
+                }
+        ]
+}

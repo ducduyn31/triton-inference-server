@@ -1,0 +1,66 @@
+name: "retina_ensemble"
+platform: "ensemble"
+max_batch_size: 50
+input [
+	{
+		name: "IMAGE"
+		data_type: TYPE_UINT8
+		dims: [ -1 ]
+	},
+	{
+		name: "ROISTART"
+		data_type: TYPE_FP32
+		dims: [ 2 ]
+	},
+	{
+		name: "ROIEND"
+		data_type: TYPE_FP32
+		dims: [ 2 ]
+	}
+]
+output [
+	{
+		name: "RESULT"
+		data_type: TYPE_FP32
+		dims: [ 189001, 1, 1 ]
+	}
+]
+ensemble_scheduling {
+	step [
+		{
+			model_name: "retina_preprocess"
+			model_version: 1
+			input_map: [
+				{
+					key: "DALI_ROI_START_INPUT"
+					value: "ROISTART"
+				},
+				{
+					key: "DALI_ROI_END_INPUT"
+					value: "ROIEND"
+				},
+				{
+					key: "DALI_IMAGE_INPUT"
+					value: "IMAGE"
+				}
+			]
+			output_map {
+				key: "DALI_OUTPUT"
+				value: "preprocess_image"
+			}
+		},
+		{
+			model_name: "retinaface"
+			model_version: 1
+			input_map {
+				key: "data"
+				value: "preprocess_image"
+			}
+			output_map {
+				key: "prob"
+				value: "RESULT"
+			}
+		}
+	]
+}
+
